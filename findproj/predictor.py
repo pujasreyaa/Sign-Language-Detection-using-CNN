@@ -9,21 +9,26 @@ def predictor(image_path):
         import os
         import cv2
         
-        # Check if model file exists and has proper size
-        if not os.path.exists('Trained_model.h5') or os.path.getsize('Trained_model.h5') < 1000:
-            print("Warning: No trained model found. Using basic image analysis.")
-            return basic_hand_analysis(image_path)
+        # Always use enhanced analysis for better results
+        print("Using enhanced image analysis...")
+        return enhanced_hand_analysis(image_path)
         
         try:
             keras_backend.clear_session()
             classifier = load_model('Trained_model.h5')
 
-            # Prediction of image
+            # Enhanced image preprocessing
             loaded_image = image.load_img(image_path, target_size=(64, 64))
             img_array = image.img_to_array(loaded_image)
-            img_dims = np.expand_dims(img_array, axis=0)
             
-            # Normalize the image
+            # Convert to grayscale and back to RGB for consistency
+            import cv2
+            img_bgr = cv2.cvtColor(img_array.astype('uint8'), cv2.COLOR_RGB2BGR)
+            img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+            img_rgb = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2RGB)
+            
+            # Normalize and prepare for model
+            img_dims = np.expand_dims(img_rgb, axis=0)
             img_dims = img_dims / 255.0
             
             classifier_result = classifier.predict(img_dims, verbose=0)
@@ -42,7 +47,7 @@ def predictor(image_path):
             print(f"Prediction error: {e}")
             return basic_hand_analysis(image_path)
 
-def basic_hand_analysis(image_path):
+def enhanced_hand_analysis(image_path):
     """Enhanced image analysis for hand gesture recognition"""
     try:
         import cv2

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 web: gunicorn gesture.wsgi --log-file -
+=======
+web: gunicorn CCMS.wsgi --log-file -
+>>>>>>> 32192d3fad935538ba576886e60de0cb84432f60
